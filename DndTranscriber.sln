@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B05D3660-FF2F-4016-BD7F-670C7124888E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DndTranscriber", "src\DndTranscriber\DndTranscriber.csproj", "{BA060FD2-4EF0-4442-B552-CDB79C7F0BA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DndTranscriber.Core", "src\DndTranscriber.Core\DndTranscriber.Core.csproj", "{950225F9-44DE-49A1-A49D-B96654F3803A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DndTranscriber.DataAccess", "src\DndTranscriber.DataAccess\DndTranscriber.DataAccess.csproj", "{92A17998-9156-4BAB-81AE-2C5831EF9AB2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B876B9E5-B88F-4FC9-B6CB-2B26F4C574E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DndTranscriber.Core.Tests", "tests\DndTranscriber.Core.Tests\DndTranscriber.Core.Tests.csproj", "{2AB693BE-211E-48E9-BC3E-D78829C50E44}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BA060FD2-4EF0-4442-B552-CDB79C7F0BA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA060FD2-4EF0-4442-B552-CDB79C7F0BA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA060FD2-4EF0-4442-B552-CDB79C7F0BA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA060FD2-4EF0-4442-B552-CDB79C7F0BA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{950225F9-44DE-49A1-A49D-B96654F3803A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{950225F9-44DE-49A1-A49D-B96654F3803A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{950225F9-44DE-49A1-A49D-B96654F3803A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{950225F9-44DE-49A1-A49D-B96654F3803A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92A17998-9156-4BAB-81AE-2C5831EF9AB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92A17998-9156-4BAB-81AE-2C5831EF9AB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92A17998-9156-4BAB-81AE-2C5831EF9AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92A17998-9156-4BAB-81AE-2C5831EF9AB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AB693BE-211E-48E9-BC3E-D78829C50E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AB693BE-211E-48E9-BC3E-D78829C50E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AB693BE-211E-48E9-BC3E-D78829C50E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AB693BE-211E-48E9-BC3E-D78829C50E44}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BA060FD2-4EF0-4442-B552-CDB79C7F0BA0} = {B05D3660-FF2F-4016-BD7F-670C7124888E}
+		{950225F9-44DE-49A1-A49D-B96654F3803A} = {B05D3660-FF2F-4016-BD7F-670C7124888E}
+		{92A17998-9156-4BAB-81AE-2C5831EF9AB2} = {B05D3660-FF2F-4016-BD7F-670C7124888E}
+		{2AB693BE-211E-48E9-BC3E-D78829C50E44} = {B876B9E5-B88F-4FC9-B6CB-2B26F4C574E0}
+	EndGlobalSection
+EndGlobal
