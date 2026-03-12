@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s ifconfig.me)",
+      "Bash(powershell.exe -Command \"Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH*'\")",
+      "Bash(powershell.exe -Command \"Get-Service sshd\")"
+    ]
+  }
+}

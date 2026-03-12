@@ -1,5 +1,4 @@
 using DndTranscriber.Core.Interfaces;
-using DndTranscriber.Core.Models;
 using DndTranscriber.Core.Services;
 using DndTranscriber.DataAccess.Audio;
 using DndTranscriber.DataAccess.Configuration;
@@ -8,20 +7,29 @@ using DndTranscriber.DataAccess.Transcription;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Runtime.InteropServices;
 
-if (args.Length < 1)
+// Parse flags
+bool useBatch = args.Contains("--batch", StringComparer.OrdinalIgnoreCase);
+var positionalArgs = args.Where(a => !a.StartsWith("--")).ToArray();
+
+if (positionalArgs.Length < 1)
 {
-    Console.WriteLine("Usage: DndTranscriber <audio-file> [output-file]");
+    Console.WriteLine("Usage: DndTranscriber <audio-file> [output-file] [--batch]");
     Console.WriteLine();
     Console.WriteLine("Arguments:");
     Console.WriteLine("  audio-file          Path to local audio file (MP3, WAV, etc.)");
-    Console.WriteLine("  output-file         (Optional) Path to save the summary. If omitted, prints to console.");
+    Console.WriteLine("  output-file         (Optional) Output directory or file base name.");
+    Console.WriteLine("                      Defaults to ./data/output/<input-name>");
+    Console.WriteLine();
+    Console.WriteLine("Options:");
+    Console.WriteLine("  --batch             Use Azure Batch Transcription (uploads to Blob Storage).");
+    Console.WriteLine("                      Faster for long recordings. Requires AzureBlob config.");
+    Console.WriteLine("                      Without this flag, uses real-time SDK transcription.");
     return 1;
 }
 
-string audioInput = args[0];
-string? outputFile = args.Length > 1 ? args[1] : null;
+string audioInput = positionalArgs[0];
+string? outputFile = positionalArgs.Length > 1 ? positionalArgs[1] : null;
 
 // Build configuration
 var configuration = new ConfigurationBuilder()
@@ -38,18 +46,27 @@ services.Configure<AzureSpeechSettings>(
     configuration.GetSection(AzureSpeechSettings.SectionName));
 services.Configure<AnthropicSettings>(
     configuration.GetSection(AnthropicSettings.SectionName));
+services.Configure<AzureBlobSettings>(
+    configuration.GetSection(AzureBlobSettings.SectionName));
 
 services.AddLogging(builder =>
 {
     builder.AddConsole();
-    builder.SetMinimumLevel(LogLevel.Information);
+    builder.SetMinimumLevel(LogLevel.Debug);
 });
 
-services.AddSingleton<ITranscriptionService, AzureSpeechSdkTranscriptionService>();
-if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-    services.AddSingleton<IAudioChunker, FFMpegAudioChunker>();
+if (useBatch)
+{
+    Console.WriteLine("Mode: Batch Transcription (Blob Storage upload)");
+    services.AddHttpClient<ITranscriptionService, AzureBatchTranscriptionService>();
+}
 else
-    services.AddSingleton<IAudioChunker, NAudioChunker>();
+{
+    Console.WriteLine("Mode: Real-time SDK Transcription (local file)");
+    services.AddSingleton<ITranscriptionService, AzureSpeechSdkTranscriptionService>();
+}
+
+services.AddSingleton<IAudioChunker, NAudioChunker>();
 services.AddSingleton<ISummarizationService, AnthropicSummarizationService>();
 services.AddTransient<TranscriptionOrchestrator>();
 
@@ -68,22 +85,27 @@ try
         audioInput,
         cancellationToken: CancellationToken.None);
 
+    string outputDir = outputFile != null
+        ? Path.GetDirectoryName(Path.GetFullPath(outputFile))!
+        : Path.Combine(Directory.GetCurrentDirectory(), "data", "output");
+    Directory.CreateDirectory(outputDir);
+
+    string baseName = outputFile != null
+        ? Path.GetFileNameWithoutExtension(outputFile)
+        : Path.GetFileNameWithoutExtension(audioInput);
+
+    string summaryPath = Path.Combine(outputDir, $"{baseName}.summary.txt");
+    string transcriptionPath = Path.Combine(outputDir, $"{baseName}.transcription.txt");
+
+    await File.WriteAllTextAsync(summaryPath, summary.Summary);
+    await File.WriteAllTextAsync(transcriptionPath, transcription);
+
     Console.WriteLine("=== SUMMARY ===");
     Console.WriteLine();
     Console.WriteLine(summary.Summary);
-
-    if (outputFile != null)
-    {
-        await File.WriteAllTextAsync(outputFile, summary.Summary);
-        Console.WriteLine();
-        Console.WriteLine($"Summary saved to: {outputFile}");
-    }
-
-    string transcriptionOutputFile = outputFile != null
-        ? Path.ChangeExtension(outputFile, ".transcription.txt")
-        : "transcription.txt";
-    await File.WriteAllTextAsync(transcriptionOutputFile, transcription);
-    Console.WriteLine($"Full transcription saved to: {transcriptionOutputFile}");
+    Console.WriteLine();
+    Console.WriteLine($"Summary saved to: {summaryPath}");
+    Console.WriteLine($"Transcription saved to: {transcriptionPath}");
 
     return 0;
 }
